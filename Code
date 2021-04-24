@@ -487,6 +487,43 @@ CREATE INDEX Nindex_6 on test_1.mobile_obj(name);
 
 /*------------------------SELECT------------------------*/
 
-SELECT *
+/*В результате получим таблицу(отсортированную по урону) оружий с типом атак, весом и уроном,
+которые все кроме Normal и уронам больше 100, которые принадлежат игроку*/
+
+SELECT damage, name, attack_type, weight
 FROM test_1.arms
-ORDER BY damage
+WHERE damage > 100 AND attack_type not in ('Normal') and id_pl = 1
+ORDER BY damage DESC;
+
+/*В данной таблице я хочу получить сводку по типам атаки, и для каждого типа я хочу узнать
+сумарный вес всех оружий по типам
+(атака >100),а так же хочу убрать наобры тип атак, которые принадлежат икроку в нулевом либо в одном экземпляре*/
+
+SELECT attack_type, SUM(weight) as sum_weight
+FROM test_1.arms
+WHERE damage > 100
+GROUP BY attack_type
+HAVING count(arms.id_pl)>1;
+
+/*Хочу вывести рейтинг секций у игрока и не у игрока, по показателб защиты, и непосредственно, чтобы показатель был больше 20*/
+
+SELECT name,id_pl,protection,
+       row_number() OVER (PARTITION BY id_pl ORDER BY protection DESC)  AS rating
+FROM test_1.armor
+WHERE protection>20;
+
+/*Хочу узнать где находятся боссы с кол-во душами > 20000 и их кол-во жизни*/
+
+SELECT boss.name, location.name, boss.hp as hp_boss
+FROM test_1.boss
+INNER JOIN test_1.location on test_1.boss.id_loc = test_1.location.id_loc
+WHERE boss.soul > 20000;
+
+/*М к М(мобы в локациях)*/
+
+SELECT foo.name as Name_MO, location.name as LOCATION
+from (SELECT mobile_obj.name, mo_in_loc.id_loc
+FROM test_1.mobile_obj
+INNER JOIN test_1.mo_in_loc on mo_in_loc.id_mo = mobile_obj.id_mo
+) as foo
+inner join test_1.location on location.id_loc = foo.id_loc;
