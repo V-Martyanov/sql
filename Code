@@ -1,0 +1,376 @@
+create table if not exists location
+(
+	id_loc serial not null
+		constraint location_pk
+			primary key,
+	name text not null
+);
+
+alter table location owner to postgres;
+
+create table if not exists player
+(
+	id_pl serial not null
+		constraint player_pk
+			primary key,
+	name text not null,
+	hp integer not null,
+	mp integer not null,
+	st integer not null,
+	int integer not null,
+	soul integer not null,
+	power integer not null,
+	dex integer not null,
+	"Travel_Speed" integer not null,
+	id_loc integer
+		constraint player_location_id_loc_fk
+			references location
+);
+
+alter table player owner to postgres;
+
+create table if not exists arms
+(
+	id_arms serial not null
+		constraint arms_pk
+			primary key,
+	damage integer not null,
+	name text not null,
+	attack_type text not null,
+	ability text not null,
+	id_pl integer
+		constraint arms_player_id_pl_fk
+			references player
+				on delete set null,
+	weight integer not null
+);
+
+alter table arms owner to postgres;
+
+create table if not exists mobile_obj
+(
+	id_mo serial not null
+		constraint mobile_obj_pk
+			primary key,
+	name text not null,
+	hp integer not null,
+	dam integer not null,
+	soul integer not null
+);
+
+alter table mobile_obj owner to postgres;
+
+create table if not exists boss
+(
+	id_boss serial not null
+		constraint boss_pk
+			primary key,
+	name text not null,
+	hp integer not null,
+	dam integer not null,
+	soul integer not null,
+	id_loc integer
+		constraint boss_location_id_loc_fk
+			references location
+				on delete set null
+);
+
+alter table boss owner to postgres;
+
+create table if not exists armor
+(
+	id_armor serial not null
+		constraint armor_pk
+			primary key,
+	protection integer not null,
+	weight integer not null,
+	name text,
+	id_pl integer
+		constraint armor_player_id_pl_fk
+			references player
+				on delete set null,
+	id_armor_for_boss integer
+		constraint armor_boss_id_boss_fk
+			references boss
+);
+
+alter table armor owner to postgres;
+
+create table if not exists arms_in_mo
+(
+	position integer,
+	id_arms integer
+		constraint arms_in_mo_arms_id_arms_fk
+			references arms,
+	id_mo integer
+		constraint arms_in_mo_mobile_obj_id_mo_fk
+			references mobile_obj
+);
+
+alter table arms_in_mo owner to postgres;
+
+create table if not exists armor_on_mo
+(
+	position integer,
+	id_armor integer
+		constraint armor_on_mo_armor_id_armor_fk
+			references armor,
+	id_mo integer
+		constraint armor_on_mo_mobile_obj_id_mo_fk
+			references mobile_obj
+);
+
+alter table armor_on_mo owner to postgres;
+
+create table if not exists mo_in_loc
+(
+	id_loc integer
+		constraint mo_in_loc_location_id_loc_fk
+			references location,
+	id_mo integer
+		constraint mo_in_loc_mobile_obj_id_mo_fk
+			references mobile_obj
+);
+
+alter table mo_in_loc owner to postgres;
+
+create table if not exists boss_and_arms
+(
+	id_boss integer
+		constraint boss_and_arms_boss_id_boss_fk
+			references boss,
+	id_arms integer
+		constraint boss_and_arms_arms_id_arms_fk
+			references arms
+);
+
+/*
+ location
+ */
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (1, 'fire_temple');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (2, 'Farron_Citadel');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (3, 'Great_Archive');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (4, 'Furnace of the_First_Flame');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (5, 'Lothric castle');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (6, 'Settlement of the undead');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (7, 'Irithyll Dungeon');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (8, 'High Wall of Lothric');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (9, 'Farron Citadel');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (10, 'Temple of the Deep');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (11, 'Ash graveyard');
+
+alter table boss_and_arms owner to postgres;
+/*
+ player
+ */
+INSERT INTO test_1.player (id_pl, name, hp, mp, st, int, soul, power, dex, "Travel_Speed", id_loc)
+VALUES (1, 'A', 1000, 150, 120, 28, 11200, 18, 20, 10, 1);
+/*
+ boss
+ */
+
+ INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (1, 'Abyss_Watchers', 3096, 125, 18000, 2);
+
+INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (4, 'Soul_of_Cinder', 10500, 218, 100000, 4);
+
+INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (2, 'Dragonslayer_Armour', 4600, 250, 64000, 5);
+
+INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (3, 'Lothric, Younger Prince, Lorian, Elder Prince', 7800, 230, 85000, 3);
+
+INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (5, 'Iudex Gundyr', 1037, 150, 3000, 11);
+
+INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (6, 'Champion Gundyr', 4956, 200, 60000, 11);
+/*
+ armor
+ */
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (1, 23, 22, 'Set_Alva', 1, null);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (2, 25, 25, 'Set_Knight', 1, null);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (3, 30, 39, 'Set_Morna', null, null);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (4, 13, 10, 'Set_Worker', 1, null);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (5, 20, 16, 'Set_Deserter', 1, null);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (6, 19, 18, 'Undead_Legion_Set', null, 1);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (7, 25, 30, 'Lorian_Armor_Set', null, 3);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (8, 32, 35, 'Iron_Dragonslayer_Set', 1, 2);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (9, 22, 20, 'Firelink_Set', null, 4);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (10, 24, 22, 'Evangelist Set', null, null);
+
+/*
+ mobile_obj
+ */
+
+INSERT INTO test_1.mobile_obj (id_mo, name, hp, dam, soul)
+VALUES (1, 'Hollow Soldier', 150, 100, 80);
+
+INSERT INTO test_1.mobile_obj (id_mo, name, hp, dam, soul)
+VALUES (2, 'Peasant Hollow', 200, 80, 80);
+
+INSERT INTO test_1.mobile_obj (id_mo, name, hp, dam, soul)
+VALUES (3, 'Cathedral Evangelist', 600, 160, 380);
+/*
+ arms
+ */
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (1, 125, 'Farron Greatsword', 'Normal / stabbing', 'Parry', 1, 12);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (2, 280, 'Dragonslayer Greataxe', 'Normal', 'Thunderstrike', null, 20);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (3, 218, 'Firelink Greatsword', 'Normal', 'coal', null, 9);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (4, 150, 'Staff of fire', 'Normal', 'magic', null, 11);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (5, 240, 'Lorian''s Greatsword', 'Normal / stabbing', 'Flame of Lorian', null, 14);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (6, 30, 'Light Crossbow', 'shot', 'Shoulder blow', 1, 3);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (7, 110, 'Longsword', 'Normal / stabbing', 'Rack', 1, 3);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (8, 105, 'Four-Pronged Plow', 'Normal / stabbing', 'Onslaught', null, 6);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (9, 149, 'Spiked Mace', 'Crushing', 'Sharp roundhouse kick', null, 16);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (10, 145, 'Gundyr''s Halberd', 'Normal', 'Champion''s Rush', 1, 13);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (11, 124, ' Irithyll Straight Sword', 'Normal / stabbing', 'Rack', 1, 4);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (12, 112, 'Sunlight Straight Sword', 'Normal / stabbing', 'The Oath of the Sun', 1, 3);
+
+/*
+ mo_in_loc
+ */
+
+ INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
+VALUES (8, 1);
+
+INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
+VALUES (9, 1);
+
+INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
+VALUES (5, 1);
+
+INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
+VALUES (7, 2);
+
+INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
+VALUES (6, 2);
+
+INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
+VALUES (6, 3);
+
+INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
+VALUES (10, 3);
+
+/*
+ armor_on_mo
+ */
+INSERT INTO test_1.armor_on_mo (position, id_armor, id_mo)
+VALUES (1, 10, 3);
+
+INSERT INTO test_1.armor_on_mo (position, id_armor, id_mo)
+VALUES (1, 5, 1);
+
+INSERT INTO test_1.armor_on_mo (position, id_armor, id_mo)
+VALUES (1, 4, 2);
+/*
+ arms_in_mo
+ */
+INSERT INTO test_1.arms_in_mo (position, id_arms, id_mo)
+VALUES (1, 7, 1);
+
+INSERT INTO test_1.arms_in_mo (position, id_arms, id_mo)
+VALUES (0, 6, 1);
+
+INSERT INTO test_1.arms_in_mo (position, id_arms, id_mo)
+VALUES (1, 8, 2);
+
+INSERT INTO test_1.arms_in_mo (position, id_arms, id_mo)
+VALUES (1, 9, 3);
+/*
+ boss_and_arms
+ */
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (5, 10);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (6, 10);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (1, 1);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (2, 2);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (3, 5);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (4, 3);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (4, 4);
+
+/*------------------------DELETE------------------------*/
+DELETE
+FROM test_1.arms
+WHERE id_arms = 12;
+
+SELECT *
+FROM test_1.arms
+ORDER BY damage
