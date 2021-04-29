@@ -511,7 +511,23 @@ SELECT name,id_pl,protection,
        row_number() OVER (PARTITION BY id_pl ORDER BY protection DESC)  AS rating
 FROM test_1.armor
 WHERE protection>20;
+/*
+ хочу получить суму защиты всех оружий у игрока и не у игрока
+ */
+SELECT id_pl,
+           SUM(sum(protection)) OVER (PARTITION BY id_pl) as SUMi
+FROM test_1.armor
+GROUP BY id_pl;
 
+/*
+ Прсто показывает сначало брою которая принадлежит сначала икроку,
+ а после все остальные, с знанием предведущего и будущей брони
+ */
+
+SELECT id_pl, id_armor,
+           lag(name) OVER (PARTITION BY id_pl order by weight) as weight_prev,
+           lead(name) over (PARTITION BY id_pl order by weight) as weight_next
+FROM test_1.armor;
 /*Хочу узнать где находятся боссы с кол-во душами > 20000 и их кол-во жизни*/
 
 SELECT boss.name, location.name, boss.hp as hp_boss
@@ -527,3 +543,5 @@ FROM test_1.mobile_obj
 INNER JOIN test_1.mo_in_loc on mo_in_loc.id_mo = mobile_obj.id_mo
 ) as foo
 inner join test_1.location on location.id_loc = foo.id_loc;
+
+/*------------------------Viev------------------------*/
