@@ -187,6 +187,16 @@ VALUES (12, 'Archdragon Peak');
 INSERT INTO test_1.location (id_loc, name)
 VALUES (13, 'Large bell tower');
 
+INSERT INTO test_1.location (id_loc, name)
+VALUES (14, 'Catacombs of Carthus');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (15, 'Profaned capital');
+
+INSERT INTO test_1.location (id_loc, name)
+VALUES (16, 'Irithyll of the Boreal Valley');
+
+
 alter table boss_and_arms owner to postgres;
 /*
  player
@@ -214,6 +224,19 @@ VALUES (5, 'Iudex Gundyr', 1037, 150, 3000, 11);
 
 INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
 VALUES (6, 'Champion Gundyr', 4956, 200, 60000, 11);
+
+INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (7, 'High Lord Wolnir', 7052, 220, 22000, 14);
+
+INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (8, 'Yhorm the Giant', 27822, 300, 36000, 15);
+
+INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (9, 'Dancer of the Boreal Valley', 5111, 300, 60000, 5);
+
+INSERT INTO test_1.boss (id_boss, name, hp, dam, soul, id_loc)
+VALUES (10, 'Pontiff Sulyvahn', 5106, 190, 28000, 16);
+
 /*
  armor
  */
@@ -249,6 +272,9 @@ VALUES (10, 24, 22, 'Evangelist Set', null, null);
 
 INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
 VALUES (11, 23, 23, 'Eastern armor set', 1, null);
+
+INSERT INTO test_1.armor (id_armor, protection, weight, name, id_pl, id_armor_for_boss)
+VALUES (12, 20, 17, 'Dancer''s Set', null, 9);
 
 
 /*
@@ -304,6 +330,19 @@ VALUES (12, 112, 'Sunlight Straight Sword', 'Normal / stabbing', 'The Oath of th
 
 INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
 VALUES (13, 72, 'Murky Hand Scythe', 'Crushing', 'Crushing', 1, 2);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (14, 201, 'Dancer''s Enchanted Swords', 'Chopping', 'Dancer''s grace', null, 8);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (15, 185, 'Yhorm''s Great Machete', 'Normal', 'Battle cry', null, 19);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (16, 165, ' Profaned Greatsword', 'Normal / stabbing', 'Desecrated Flame', null, 13);
+
+INSERT INTO test_1.arms (id_arms, damage, name, attack_type, ability, id_pl, weight)
+VALUES (17, 199, 'Moonlight Greatsword', 'Normal', 'Whirlwind of moonlight', null, 10);
+
 
 
 /*
@@ -379,6 +418,19 @@ VALUES (4, 3);
 
 INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
 VALUES (4, 4);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (9, 14);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (8, 15);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (10, 16);
+
+INSERT INTO test_1.boss_and_arms (id_boss, id_arms)
+VALUES (10, 17);
+
 
 /*------------------------DELETE------------------------*/
 DELETE
@@ -544,4 +596,23 @@ INNER JOIN test_1.mo_in_loc on mo_in_loc.id_mo = mobile_obj.id_mo
 ) as foo
 inner join test_1.location on location.id_loc = foo.id_loc;
 
-/*------------------------Viev------------------------*/
+/*------------------------View------------------------*/
+
+CREATE VIEW m_k_m_of_mo_and_loc AS
+SELECT foo.name as Name_MO, location.name as LOCATION
+from (SELECT mobile_obj.name, mo_in_loc.id_loc
+FROM test_1.mobile_obj
+INNER JOIN test_1.mo_in_loc on mo_in_loc.id_mo = mobile_obj.id_mo
+) as foo
+inner join test_1.location on location.id_loc = foo.id_loc;
+
+CREATE VIEW o_k_m_of_b_in_loc AS
+SELECT boss.name as nameBoss,location.name as nameLoc
+from test_1.boss
+inner join test_1.location on location.id_loc = boss.id_loc;
+
+CREATE VIEW arms_Igroc_and_boss AS
+SELECT arms.name as arms_igroc_and_boss
+from test_1.boss_and_arms
+inner join test_1.arms on arms.id_arms = boss_and_arms.id_arms
+where arms.id_pl = 1 and arms.damage > 140;
