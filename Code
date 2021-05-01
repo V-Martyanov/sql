@@ -349,7 +349,7 @@ VALUES (17, 199, 'Moonlight Greatsword', 'Normal', 'Whirlwind of moonlight', nul
  mo_in_loc
  */
 
- INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
+INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
 VALUES (8, 1);
 
 INSERT INTO test_1.mo_in_loc (id_loc, id_mo)
@@ -616,3 +616,23 @@ SELECT arms.name as arms_igroc_and_boss
 from test_1.boss_and_arms
 inner join test_1.arms on arms.id_arms = boss_and_arms.id_arms
 where arms.id_pl = 1 and arms.damage > 140;
+
+ALTER TABLE test_1.boss
+ALTER COLUMN name ADD MASKED WITH (FUNCTION = 'default()');
+
+select *
+from test_1.boss;
+
+CREATE EXTENSION anon CASCADE;
+SELECT anon.load();
+
+
+ALTER DATABASE postgres SET session_preload_libraries = 'postgres, anon';
+
+CREATE MATERIALIZED VIEW masked_customer AS
+SELECT anon.random_last_name() AS name
+FROM test_1.boss;
+
+ALTER DATABASE postgres SET session_preload_libraries = 'anon';
+select  name
+from test_1.boss;
